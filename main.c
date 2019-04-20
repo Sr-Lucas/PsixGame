@@ -6,9 +6,9 @@
 #include <time.h>
 
 char mtzCanvas[12][16];
-int mtzCanvasGround[13];
 
 const int MIDBLOCK = 6;
+const int HEIGHT = 15;
 
 int difficult = 0;
 int timeLength = 0;
@@ -59,15 +59,18 @@ void piece227() {
 
 }
 
-void rotatePiece(){
-
-}
-
 int isPieceDownOtherPiece() {
     switch(vPiece){
         case 1:
             if(mtzCanvas[xMidPosition][yMidPosition + 1] != 'x' && mtzCanvas[xMidPosition + 1][yMidPosition + 1] != 'X' &&
                 mtzCanvas[xMidPosition - 1][yMidPosition + 1] != 'x' && mtzCanvas[xMidPosition + 2][yMidPosition + 1] != 'X') {
+                return 0;
+            } else {
+                return 1;
+            }
+            break;
+        case 190:
+            if(mtzCanvas[xMidPosition][yMidPosition + 4] != 'x') {
                 return 0;
             } else {
                 return 1;
@@ -89,6 +92,14 @@ int isPieceNextToOtherPiece(int direction) { // -1 == left && 1 == right
         case 1:
             if(mtzCanvas[(xMidPosition + 1) + direction][yMidPosition] != 'X' && mtzCanvas[(xMidPosition - 1) + direction][yMidPosition] != 'X' &&
                mtzCanvas[(xMidPosition + 2) + direction][yMidPosition] != 'X') {
+                return 0;
+            } else {
+                return 1;
+            }
+            break;
+        case 190:
+            if(mtzCanvas[xMidPosition + direction][yMidPosition] != 'X' && mtzCanvas[xMidPosition + direction][yMidPosition + 1] != 'X' &&
+               mtzCanvas[xMidPosition + direction][yMidPosition + 2] != 'X' && mtzCanvas[xMidPosition + direction][yMidPosition + 3] != 'X') {
                 return 0;
             } else {
                 return 1;
@@ -137,7 +148,7 @@ void drawCanvas() {
 
 int setPiece() {
     if(pieceAlreadyInGame == 0) {
-        //vPiece = 1 + (rand() % 2);
+        vPiece = 1 + (rand() % 2);
         switch(vPiece) {
             case 1:
                 xMidPosition = MIDBLOCK;
@@ -170,6 +181,10 @@ void doPlayerCommand() {
                         if(xMidPosition <= 8) xMidPosition++;
                         piece1(xMidPosition, yMidPosition, 'x');
                         break;
+                    case 190:
+                        if(xMidPosition <= 10) xMidPosition++;
+                        piece190(xMidPosition, yMidPosition, 'x');
+                        break;
                     case 2:
                         if(xMidPosition <= 9) xMidPosition++;
                         piece2(xMidPosition, yMidPosition, 'x');
@@ -185,6 +200,9 @@ void doPlayerCommand() {
                     case 1:
                         piece1(xMidPosition, yMidPosition, 'x');
                         break;
+                    case 190:
+                        piece190(xMidPosition, yMidPosition, 'x');
+                        break;
                     case 2:
                         piece2(xMidPosition, yMidPosition, 'x');
                         break;
@@ -199,6 +217,10 @@ void doPlayerCommand() {
                         if(xMidPosition >= 2) xMidPosition--;
                         piece1(xMidPosition, yMidPosition, 'x');
                         break;
+                    case 190:
+                        if(xMidPosition >= 1) xMidPosition--;
+                        piece190(xMidPosition, yMidPosition, 'x');
+                        break;
                     case 2:
                         if(xMidPosition >= 2) xMidPosition--;
                         piece2(xMidPosition, yMidPosition, 'x');
@@ -208,8 +230,16 @@ void doPlayerCommand() {
             break;
         case 72: //72 == up
             cleanMtz();
-            vPiece = 190;
-            piece190(xMidPosition, yMidPosition, 'x');
+            switch(vPiece){
+                case 1:
+                    piece190(xMidPosition, yMidPosition, 'x');
+                    vPiece = 190;
+                    break;
+                case 190:
+                    piece1(xMidPosition, yMidPosition, 'x');
+                    vPiece = 1;
+                    break;
+            }
             break;
     }
 }
@@ -217,10 +247,10 @@ void doPlayerCommand() {
 int isPieceOnTheGround(int piece) {
     switch(piece) {
         case 1: //piece 1
-            if(yMidPosition < mtzCanvasGround[xMidPosition]) {
-                if(yMidPosition < mtzCanvasGround[xMidPosition + 1]) {
-                    if(yMidPosition < mtzCanvasGround[xMidPosition - 1]) {
-                        if(yMidPosition < mtzCanvasGround[xMidPosition + 2]) {
+            if(yMidPosition < HEIGHT) {
+                if(yMidPosition < HEIGHT) {
+                    if(yMidPosition < HEIGHT) {
+                        if(yMidPosition < HEIGHT) {
                             return isPieceDownOtherPiece();
                         } else {
                             return 1;
@@ -236,12 +266,17 @@ int isPieceOnTheGround(int piece) {
             }
             break;
         case 190: //piece 1 turned 90 degrees left
+            if((yMidPosition + 3) < HEIGHT) {
+                return isPieceDownOtherPiece();
+            } else {
+                return 1;
+            }
             break;
         case 2: //piece 2
-            if(yMidPosition < mtzCanvasGround[xMidPosition]) {
-                if(yMidPosition < mtzCanvasGround[xMidPosition + 1]) {
-                    if(yMidPosition < mtzCanvasGround[xMidPosition - 1]) {
-                        if((yMidPosition + 1) < mtzCanvasGround[xMidPosition + 1]) {
+            if(yMidPosition < HEIGHT) {
+                if(yMidPosition < HEIGHT) {
+                    if(yMidPosition < HEIGHT) {
+                        if((yMidPosition + 1) < HEIGHT) {
                             return isPieceDownOtherPiece();
                         } else {
                             return 1;
@@ -265,17 +300,6 @@ int isPieceOnTheGround(int piece) {
     }
 }
 
-void setDefaultCanvasGround(int height) {
-    int i;
-    for(i = 0;i < 12;i++) {
-        mtzCanvasGround[i] = height;
-    }
-}
-
-void setCanvasGround(int x, int height) {
-    mtzCanvasGround[x] = height;
-}
-
 void fallPiece() {
     if(isPieceOnTheGround(vPiece) == 0) {
         cleanMtz();
@@ -287,11 +311,16 @@ void fallPiece() {
             case 2:
                 piece2(xMidPosition, yMidPosition, 'x');
                 break;
+            case 190:
+                piece190(xMidPosition, yMidPosition, 'x');
         }
     } else {
         switch(vPiece){
             case 1:
                 piece1(xMidPosition, yMidPosition, 'X');
+                break;
+            case 190:
+                piece190(xMidPosition, yMidPosition, 'X');
                 break;
             case 2:
                 piece2(xMidPosition, yMidPosition, 'X');
@@ -326,7 +355,6 @@ void checkFullLines(){
 }
 
 void startGame() {
-    setDefaultCanvasGround(15);
     int gameOver = 0;
     int vErr = 0;
     time_t t = time(NULL);
