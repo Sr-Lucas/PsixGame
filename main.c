@@ -62,15 +62,15 @@ void piece227() {
 int isPieceDownOtherPiece() {
     switch(vPiece){
         case 1:
-            if(mtzCanvas[xMidPosition][yMidPosition + 1] != 'x' && mtzCanvas[xMidPosition + 1][yMidPosition + 1] != 'X' &&
-                mtzCanvas[xMidPosition - 1][yMidPosition + 1] != 'x' && mtzCanvas[xMidPosition + 2][yMidPosition + 1] != 'X') {
+            if(mtzCanvas[xMidPosition][yMidPosition + 1] != 'X' && mtzCanvas[xMidPosition + 1][yMidPosition + 1] != 'X' &&
+                mtzCanvas[xMidPosition - 1][yMidPosition + 1] != 'X' && mtzCanvas[xMidPosition + 2][yMidPosition + 1] != 'X') {
                 return 0;
             } else {
                 return 1;
             }
             break;
         case 190:
-            if(mtzCanvas[xMidPosition][yMidPosition + 4] != 'x') {
+            if(mtzCanvas[xMidPosition][yMidPosition + 4] != 'X') {
                 return 0;
             } else {
                 return 1;
@@ -148,7 +148,7 @@ void drawCanvas() {
 
 int setPiece() {
     if(pieceAlreadyInGame == 0) {
-        vPiece = 1 + (rand() % 2);
+        vPiece = 1; //+ (rand() % 2);
         switch(vPiece) {
             case 1:
                 xMidPosition = MIDBLOCK;
@@ -308,11 +308,12 @@ void fallPiece() {
             case 1:
                 piece1(xMidPosition, yMidPosition, 'x');
                 break;
+            case 190:
+                piece190(xMidPosition, yMidPosition, 'x');
+                break;
             case 2:
                 piece2(xMidPosition, yMidPosition, 'x');
                 break;
-            case 190:
-                piece190(xMidPosition, yMidPosition, 'x');
         }
     } else {
         switch(vPiece){
@@ -342,16 +343,21 @@ void checkFullLines(){
 
             filledLinesCounter++;
             userScore += (100 * filledLinesCounter);
-            for(j=0; j<12; j++){
-                mtzCanvas[j][i] = '.';
-                for(l=i-1;l!=0;l--){
-                    mtzCanvas[j][l+1] = mtzCanvas[j][l];
-                }
-            }
 
+        } else {
+            while(filledLinesCounter > 0){
+                i++;
+                for(j=0; j<12; j++){
+                    mtzCanvas[j][i] = '.';
+                    for(l=i-1;l!=0;l--){
+                        mtzCanvas[j][l+1] = mtzCanvas[j][l];
+                    }
+                }
+                filledLinesCounter--;
+            }
         }
-        filledLinesCounter = 0;
     }
+    filledLinesCounter = 0;
 }
 
 void startGame() {
