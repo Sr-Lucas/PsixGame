@@ -1,0 +1,25 @@
+# depslib dependency file v1.0
+1555751554 source:c:\users\71124\onedrive\Área de trabalho\c projectcs\psixgame\main.c
+	<stdio.h>
+	<stdlib.h>
+	<conio.h>
+	<unistd.h>
+	<Windows.h>
+	<time.h>
+
+1555550683 source:c:\users\aluno\desktop\psixgame-20190418t000822z-001\psixgame\main.c
+	<stdio.h>
+	<stdlib.h>
+	<conio.h>
+	<unistd.h>
+	<Windows.h>
+	<time.h>
+
+1555638702 source:c:\users\71124\onedrive\Área de trabalho\psixgame - v2\psixgame\main.c
+	<stdio.h>
+	<stdlib.h>
+	<conio.h>
+	<unistd.h>
+	<Windows.h>
+	<time.h>
+
