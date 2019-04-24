@@ -29,8 +29,8 @@ int filledLinesCounter = 0;
 void piece1(int x, int y, char value) {
     mtzCanvas[x][y] = value;
     mtzCanvas[x + 1][y] = value;
-    mtzCanvas[x - 1][y] = value;
     mtzCanvas[x + 2][y] = value;
+    mtzCanvas[x + 3][y] = value;
 }
 
 void piece190(int x, int y, char value) {
