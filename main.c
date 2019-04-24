@@ -10,8 +10,8 @@
 #define HEIGHT 16 /*the canvas HEIGHT*/
 
 /* Don't change these constants behind never */
-#define MAXWIDTHRIGHT (WIDTH - 1) /*the canvas max WIDTH at right.  !!!Used for the piece not get out of the board!!! */
-#define MAXWIDTHLEFT 0   /*the canvas max WIDTH at right.           !!!Used for the piece not get out of the board!!! */
+#define MAXWIDTH (WIDTH - 1) /*the canvas max WIDTH at right.  !!!Used for the piece not get out of the board!!! */
+#define MINWIDTH 0   /*the canvas max WIDTH at right.           !!!Used for the piece not get out of the board!!! */
 
 char mtzCanvas[WIDTH][HEIGHT];
 
@@ -134,6 +134,7 @@ void cleanMtz() {
 }
 
 void drawCanvas() {
+    system("CLS");
     int i;
     int j;
     printf("  ");
@@ -187,15 +188,15 @@ void doPlayerCommand() {
                 cleanMtz();
                 switch(vPiece){
                     case 1:
-                        if((xMidPosition + 3) != MAXWIDTHRIGHT) xMidPosition++;
+                        if((xMidPosition + 3) != MAXWIDTH) xMidPosition++;
                         piece1(xMidPosition, yMidPosition, 'x');
                         break;
                     case 190:
-                        if(xMidPosition != MAXWIDTHRIGHT) xMidPosition++;
+                        if(xMidPosition != MAXWIDTH) xMidPosition++;
                         piece190(xMidPosition, yMidPosition, 'x');
                         break;
                     case 2:
-                        if((xMidPosition + 2) != MAXWIDTHRIGHT) xMidPosition++;
+                        if((xMidPosition + 2) != MAXWIDTH) xMidPosition++;
                         piece2(xMidPosition, yMidPosition, 'x');
                         break;
                 }
@@ -223,30 +224,41 @@ void doPlayerCommand() {
                 cleanMtz();
                 switch(vPiece){
                     case 1:
-                        if(xMidPosition != MAXWIDTHLEFT) xMidPosition--;
+                        if(xMidPosition != MINWIDTH) xMidPosition--;
                         piece1(xMidPosition, yMidPosition, 'x');
                         break;
                     case 190:
-                        if(xMidPosition != MAXWIDTHLEFT) xMidPosition--;
+                        if(xMidPosition != MINWIDTH) xMidPosition--;
                         piece190(xMidPosition, yMidPosition, 'x');
                         break;
                     case 2:
-                        if(xMidPosition != MAXWIDTHLEFT) xMidPosition--;
+                        if(xMidPosition != MINWIDTH) xMidPosition--;
                         piece2(xMidPosition, yMidPosition, 'x');
                         break;
                 }
             }
             break;
         case 72: //72 == up
-            cleanMtz();
             switch(vPiece){
                 case 1:
-                    piece190(xMidPosition, yMidPosition, 'x');
-                    vPiece = 190;
+                    if(mtzCanvas[xMidPosition][yMidPosition + 1] != 'X' &&
+                       mtzCanvas[xMidPosition][yMidPosition + 2] != 'X' &&
+                       mtzCanvas[xMidPosition][yMidPosition + 3] != 'X'){
+                        cleanMtz();
+                        piece190(xMidPosition, yMidPosition, 'x');
+                        vPiece = 190;
+                    }
                     break;
                 case 190:
-                    piece1(xMidPosition, yMidPosition, 'x');
-                    vPiece = 1;
+                    if((xMidPosition + 2) < MAXWIDTH) {
+                        if(mtzCanvas[xMidPosition + 1][yMidPosition] != 'X' &&
+                           mtzCanvas[xMidPosition + 2][yMidPosition] != 'X' &&
+                           mtzCanvas[xMidPosition + 3][yMidPosition] != 'X'){
+                            cleanMtz();
+                            piece1(xMidPosition, yMidPosition, 'x');
+                            vPiece = 1;
+                        }
+                    }
                     break;
             }
             break;
@@ -362,8 +374,6 @@ void startGame() {
             fallPiece();
         }
         printf("%i", userScore);
-        Sleep(16.66);
-        system("CLS");
     } while(gameOver != 1 && vErr != 1);
 }
 
