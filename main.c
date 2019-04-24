@@ -6,7 +6,7 @@
 #include <time.h>
 
 /* Change these constants behind if you want a different size of canvas */
-#define WIDTH 12  /*the canvas WIDTH*/
+#define WIDTH 13  /*the canvas WIDTH*/  /*recommended an odd number*/
 #define HEIGHT 16 /*the canvas HEIGHT*/
 
 /* Don't change these constants behind never */
@@ -15,18 +15,11 @@
 
 char mtzCanvas[WIDTH][HEIGHT];
 
-const int MIDBLOCK = 6;
+int difficult = 0, timeLength = 0, pieceAlreadyInGame = 0,
+    vPiece = 1, playerCommand, userScore = 0,filledLinesCounter = 0,
+    xMidPosition = 0, yMidPosition = 0;
 
-    int difficult = 0;
-    int timeLength = 0;
-    int pieceAlreadyInGame = 0;
-    int vPiece = 1;
-    int playerCommand;
-    int userScore = 0;
-    int filledLinesCounter = 0;
-
-    int xMidPosition = 0;
-    int yMidPosition = 0;
+const int MIDBLOCK = (WIDTH/2)-1;
 
 char* vDifficult = "(nao escolhida)";
 char* vTimeLenght = "(nao escolhido)";
@@ -470,7 +463,7 @@ int main(){
         printf("\t\t T - Escolhe o tempo de jogo \n\n");
         printf("\t\t ESC - Sair \n\n\n\n\n\n");
 
-        printf("\t DIFICULDADE -> %s\n",vDifficult);
+        printf("\t DIFICULDADE -> %s\t",vDifficult);
         printf("\t TEMPO DE JOGO -> %s\n",vTimeLenght);
 
         usrChoose = getch();
