@@ -9,7 +9,7 @@
 #define WIDTH 13  /*the canvas WIDTH*/  /*recommended an odd number*/
 #define HEIGHT 16 /*the canvas HEIGHT*/
 
-/* Don't change these constants behind never */
+/* Do never change these constants behind */
 #define MAXWIDTH (WIDTH - 1) /*the canvas max WIDTH at right.  !!!Used for the piece not get out of the board!!! */
 #define MINWIDTH 0   /*the canvas max WIDTH at right.           !!!Used for the piece not get out of the board!!! */
 
@@ -45,8 +45,11 @@ void piece2(int x, int y, char value) {
     mtzCanvas[x + 2][y + 1] = value;
 }
 
-void piece290() {
-
+void piece290(int x, int y, char value) {
+    mtzCanvas[x][y] = value;
+    mtzCanvas[x][y - 1] = value;
+    mtzCanvas[x][y - 2] = value;
+    mtzCanvas[x + 1][y -2] = value;
 }
 
 void piece218() {
@@ -55,6 +58,65 @@ void piece218() {
 
 void piece227() {
 
+}
+
+void cleanMtz() {
+    int i = 0;
+    int j = 0;
+    for(i = 0;i < HEIGHT; i++) {
+        for(j = 0;j < WIDTH;j++) {
+            if(mtzCanvas[j][i] == 'x') {
+                mtzCanvas[j][i] = '.';
+            }
+        }
+    }
+}
+
+void drawCanvas() {
+    system("CLS");
+    int i;
+    int j;
+    printf("  ");
+    for(i = 0; i<WIDTH ; i++) printf("_ ");
+    printf("\n");
+    for(i = 0;i < HEIGHT; i++) {
+        printf("|");
+        for(j = 0;j < WIDTH;j++) {
+            if(mtzCanvas[j][i] == 0) {
+                mtzCanvas[j][i] = '.';
+            }
+            printf(" %c", mtzCanvas[j][i]);
+        }
+        printf(" |");
+        printf("\n");
+    }
+    printf("  ");
+    for(i = 0; i<WIDTH ; i++) printf("- ");
+    printf("\n");
+}
+
+int setPiece() {
+    if(pieceAlreadyInGame == 0) {
+        vPiece = 1 + (rand() % 2);
+        switch(vPiece) {
+            case 1:
+                xMidPosition = MIDBLOCK;
+                yMidPosition = 0;
+                piece1(MIDBLOCK, 0, 'x');
+                pieceAlreadyInGame = 1;
+                return 0;
+            case 2:
+                xMidPosition = MIDBLOCK;
+                yMidPosition = 0;
+                piece2(MIDBLOCK, 0, 'x');
+                pieceAlreadyInGame = 1;
+                return 0;
+            default:
+                return 1;
+
+        }
+    }
+    return 0;
 }
 
 int isPieceDownOtherPiece() {
@@ -121,63 +183,36 @@ int isPieceNextToOtherPiece(int direction) { // -1 == left && 1 == right
     }
 }
 
-void cleanMtz() {
-    int i = 0;
-    int j = 0;
-    for(i = 0;i < HEIGHT; i++) {
-        for(j = 0;j < WIDTH;j++) {
-            if(mtzCanvas[j][i] == 'x') {
-                mtzCanvas[j][i] = '.';
-            }
-        }
-    }
-}
-
-void drawCanvas() {
-    system("CLS");
-    int i;
-    int j;
-    printf("  ");
-    for(i = 0; i<WIDTH ; i++) printf("_ ");
-    printf("\n");
-    for(i = 0;i < HEIGHT; i++) {
-        printf("|");
-        for(j = 0;j < WIDTH;j++) {
-            if(mtzCanvas[j][i] == 0) {
-                mtzCanvas[j][i] = '.';
-            }
-            printf(" %c", mtzCanvas[j][i]);
-        }
-        printf(" |");
-        printf("\n");
-    }
-    printf("  ");
-    for(i = 0; i<WIDTH ; i++) printf("- ");
-    printf("\n");
-}
-
-int setPiece() {
-    if(pieceAlreadyInGame == 0) {
-        vPiece = 1 + (rand() % 2);
-        switch(vPiece) {
-            case 1:
-                xMidPosition = MIDBLOCK;
-                yMidPosition = 0;
-                piece1(MIDBLOCK, 0, 'x');
-                pieceAlreadyInGame = 1;
-                return 0;
-            case 2:
-                xMidPosition = MIDBLOCK;
-                yMidPosition = 0;
-                piece2(MIDBLOCK, 0, 'x');
-                pieceAlreadyInGame = 1;
-                return 0;
-            default:
+int isPieceOnTheGround(int piece) {
+    switch(piece) {
+        case 1: //piece 1
+            if(yMidPosition < (HEIGHT - 1)){
+                    return isPieceDownOtherPiece();
+            } else {
                 return 1;
-
-        }
+            }
+            break;
+        case 190: //piece 1 turned 90 degrees left
+            if((yMidPosition + 3) < (HEIGHT - 1)) {
+                return isPieceDownOtherPiece();
+            } else {
+                return 1;
+            }
+            break;
+        case 2: //piece 2
+            if((yMidPosition + 1) < (HEIGHT - 1)) {
+                return isPieceDownOtherPiece();
+            } else {
+                return 1;
+            }
+            break;
+        case 290: //piece 2 turned 90 degrees left
+            break;
+        case 218: //piece 2 turned 180 degrees left
+            break;
+        case 227: //piece 2 turned 270 degrees left
+            break;
     }
-    return 0;
 }
 
 void doPlayerCommand() {
@@ -243,7 +278,8 @@ void doPlayerCommand() {
                 case 1:
                     if(mtzCanvas[xMidPosition][yMidPosition + 1] != 'X' &&
                        mtzCanvas[xMidPosition][yMidPosition + 2] != 'X' &&
-                       mtzCanvas[xMidPosition][yMidPosition + 3] != 'X'){
+                       mtzCanvas[xMidPosition][yMidPosition + 3] != 'X' &&
+                        (yMidPosition + 3) < HEIGHT){
                         cleanMtz();
                         piece190(xMidPosition, yMidPosition, 'x');
                         vPiece = 190;
@@ -260,39 +296,12 @@ void doPlayerCommand() {
                         }
                     }
                     break;
+                case 2:
+                    cleanMtz();
+                    piece290(xMidPosition, yMidPosition, 'x');
+                    vPiece = 290;
+                    break;
             }
-            break;
-    }
-}
-
-int isPieceOnTheGround(int piece) {
-    switch(piece) {
-        case 1: //piece 1
-            if(yMidPosition < (HEIGHT - 1)){
-                    return isPieceDownOtherPiece();
-            } else {
-                return 1;
-            }
-            break;
-        case 190: //piece 1 turned 90 degrees left
-            if((yMidPosition + 3) < (HEIGHT - 1)) {
-                return isPieceDownOtherPiece();
-            } else {
-                return 1;
-            }
-            break;
-        case 2: //piece 2
-            if((yMidPosition + 1) < (HEIGHT - 1)) {
-                return isPieceDownOtherPiece();
-            } else {
-                return 1;
-            }
-            break;
-        case 290: //piece 2 turned 90 degrees left
-            break;
-        case 218: //piece 2 turned 180 degrees left
-            break;
-        case 227: //piece 2 turned 270 degrees left
             break;
     }
 }
