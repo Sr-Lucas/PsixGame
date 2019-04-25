@@ -25,6 +25,7 @@ char* vDifficult = "(nao escolhida)";
 char* vTimeLenght = "(nao escolhido)";
 
 void piece1(int x, int y, char value) {
+    cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x + 1][y] = value;
     mtzCanvas[x + 2][y] = value;
@@ -32,6 +33,7 @@ void piece1(int x, int y, char value) {
 }
 
 void piece190(int x, int y, char value) {
+    cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x][y + 1] = value;
     mtzCanvas[x][y + 2] = value;
@@ -39,6 +41,7 @@ void piece190(int x, int y, char value) {
 }
 
 void piece2(int x, int y, char value) {
+    cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x + 1][y] = value;
     mtzCanvas[x + 2][y] = value;
@@ -46,17 +49,24 @@ void piece2(int x, int y, char value) {
 }
 
 void piece290(int x, int y, char value) {
+    cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x][y - 1] = value;
     mtzCanvas[x][y - 2] = value;
     mtzCanvas[x + 1][y -2] = value;
 }
 
-void piece218() {
+void piece218(int x, int y, char value) {
+    cleanMtz();
+    mtzCanvas[x][y] = value;
+    mtzCanvas[x - 1][y] = value;
+    mtzCanvas[x - 2][y] = value;
+    mtzCanvas[x - 2][y - 1] = value;
 
 }
 
 void piece227() {
+    cleanMtz();
 
 }
 
@@ -93,6 +103,7 @@ void drawCanvas() {
     printf("  ");
     for(i = 0; i<WIDTH ; i++) printf("- ");
     printf("\n");
+    printf("%i", userScore);
 }
 
 int setPiece() {
@@ -120,7 +131,7 @@ int setPiece() {
 }
 
 int isPieceDownOtherPiece() {
-    switch(vPiece){
+    switch(vPiece) {
         case 1:
             if(mtzCanvas[xMidPosition][yMidPosition + 1] != 'X' &&
                 mtzCanvas[xMidPosition + 1][yMidPosition + 1] != 'X' &&
@@ -148,7 +159,16 @@ int isPieceDownOtherPiece() {
             }
         case 290:
             if(mtzCanvas[xMidPosition][yMidPosition + 1] != 'X' &&
-                mtzCanvas[xMidPosition + 1][(yMidPosition - 2) + 1] != 'X'){
+                mtzCanvas[xMidPosition + 1][(yMidPosition - 2) + 1] != 'X') {
+                return 0;
+            } else {
+                return 1;
+            }
+            break;
+        case 218:
+            if(mtzCanvas[xMidPosition][yMidPosition + 1] != 'X' &&
+               mtzCanvas[xMidPosition - 1][yMidPosition + 1] != 'X' &&
+               mtzCanvas[xMidPosition - 2][yMidPosition + 1] != 'X') {
                 return 0;
             } else {
                 return 1;
@@ -158,7 +178,7 @@ int isPieceDownOtherPiece() {
 }
 
 int isPieceNextToOtherPiece(int direction) { // -1 == left && 1 == right
-    switch(vPiece){
+    switch(vPiece) {
         case 1:
             if(mtzCanvas[xMidPosition + direction][yMidPosition] != 'X' &&
                mtzCanvas[(xMidPosition + 3) + direction][yMidPosition] != 'X') {
@@ -190,7 +210,16 @@ int isPieceNextToOtherPiece(int direction) { // -1 == left && 1 == right
             if(mtzCanvas[xMidPosition + direction][yMidPosition] != 'X' &&
                mtzCanvas[xMidPosition + direction][yMidPosition - 1] != 'X' &&
                mtzCanvas[xMidPosition + direction][yMidPosition - 2] != 'X' &&
-               mtzCanvas[(xMidPosition + 1) + direction][yMidPosition - 2] != 'X'){
+               mtzCanvas[(xMidPosition + 1) + direction][yMidPosition - 2] != 'X') {
+                return 0;
+            } else {
+                return 1;
+            }
+            break;
+        case 218:
+            if(mtzCanvas[xMidPosition + direction][yMidPosition] != 'X' &&
+               mtzCanvas[(xMidPosition - 2) + direction][yMidPosition] != 'X' &&
+               mtzCanvas[(xMidPosition - 2) + direction][yMidPosition - 1] != 'X'){
                 return 0;
             } else {
                 return 1;
@@ -202,7 +231,7 @@ int isPieceNextToOtherPiece(int direction) { // -1 == left && 1 == right
 int isPieceOnTheGround(int piece) {
     switch(piece) {
         case 1: //piece 1
-            if(yMidPosition < (HEIGHT - 1)){
+            if(yMidPosition < (HEIGHT - 1)) {
                     return isPieceDownOtherPiece();
             } else {
                 return 1;
@@ -223,13 +252,18 @@ int isPieceOnTheGround(int piece) {
             }
             break;
         case 290: //piece 2 turned 90 degrees left
-            if(yMidPosition < (HEIGHT - 1)){
+            if(yMidPosition < (HEIGHT - 1)) {
                 return isPieceDownOtherPiece();
             } else {
                 return 1;
             }
             break;
         case 218: //piece 2 turned 180 degrees left
+            if(yMidPosition < (HEIGHT - 1)){
+                return isPieceDownOtherPiece();
+            } else {
+                return 1;
+            }
             break;
         case 227: //piece 2 turned 270 degrees left
             break;
@@ -241,8 +275,7 @@ void doPlayerCommand() {
     switch(playerCommand) {
         case 77: //77 == right
             if(isPieceNextToOtherPiece(1) != 1) {
-                cleanMtz();
-                switch(vPiece){
+                switch(vPiece) {
                     case 1:
                         if((xMidPosition + 3) != MAXWIDTH) xMidPosition++;
                         piece1(xMidPosition, yMidPosition, 'x');
@@ -259,14 +292,18 @@ void doPlayerCommand() {
                         if((xMidPosition + 1) != MAXWIDTH) xMidPosition++;
                         piece290(xMidPosition, yMidPosition, 'x');
                         break;
+                    case 218:
+                        if((xMidPosition) != MAXWIDTH) xMidPosition++;
+                        piece218(xMidPosition, yMidPosition, 'x');
+                        break;
+
                 }
             }
             break;
         case 80: //80 == down
             if((isPieceOnTheGround(vPiece)) == 0) {
-                cleanMtz();
                 yMidPosition++;
-                switch(vPiece){
+                switch(vPiece) {
                     case 1:
                         piece1(xMidPosition, yMidPosition, 'x');
                         break;
@@ -278,14 +315,16 @@ void doPlayerCommand() {
                         break;
                     case 290:
                         piece290(xMidPosition, yMidPosition, 'x');
+                        break;
+                    case 218:
+                        piece218(xMidPosition, yMidPosition, 'x');
                         break;
                 }
             }
             break;
         case 75: //75 == left
             if((isPieceNextToOtherPiece(-1)) != 1) {
-                cleanMtz();
-                switch(vPiece){
+                switch(vPiece) {
                     case 1:
                         if(xMidPosition != MINWIDTH) xMidPosition--;
                         piece1(xMidPosition, yMidPosition, 'x');
@@ -301,17 +340,21 @@ void doPlayerCommand() {
                     case 290:
                         if(xMidPosition != MINWIDTH) xMidPosition--;
                         piece290(xMidPosition, yMidPosition, 'x');
+                        break;
+                    case 218:
+                        if((xMidPosition - 2) != MINWIDTH) xMidPosition--;
+                        piece218(xMidPosition, yMidPosition, 'x');
+                        break;
                 }
             }
             break;
         case 72: //72 == up
-            switch(vPiece){
+            switch(vPiece) {
                 case 1:
                     if(mtzCanvas[xMidPosition][yMidPosition + 1] != 'X' &&
                        mtzCanvas[xMidPosition][yMidPosition + 2] != 'X' &&
                        mtzCanvas[xMidPosition][yMidPosition + 3] != 'X' &&
-                        (yMidPosition + 3) < HEIGHT){
-                        cleanMtz();
+                        (yMidPosition + 3) < HEIGHT) {
                         piece190(xMidPosition, yMidPosition, 'x');
                         vPiece = 190;
                     }
@@ -320,28 +363,39 @@ void doPlayerCommand() {
                     if((xMidPosition + 2) < MAXWIDTH) {
                         if(mtzCanvas[xMidPosition + 1][yMidPosition] != 'X' &&
                            mtzCanvas[xMidPosition + 2][yMidPosition] != 'X' &&
-                           mtzCanvas[xMidPosition + 3][yMidPosition] != 'X'){
-                            cleanMtz();
+                           mtzCanvas[xMidPosition + 3][yMidPosition] != 'X') {
                             piece1(xMidPosition, yMidPosition, 'x');
                             vPiece = 1;
                         }
                     }
                     break;
                 case 2:
-                    if((yMidPosition - 2) >= 0){
-                        cleanMtz();
-                        piece290(xMidPosition, yMidPosition, 'x');
-                        vPiece = 290;
+                    if((yMidPosition - 2) >= 0) {
+                        if(mtzCanvas[xMidPosition][yMidPosition - 1] != 'X' &&
+                           mtzCanvas[xMidPosition][yMidPosition - 2] != 'X' &&
+                           mtzCanvas[xMidPosition + 1][yMidPosition - 2] != 'X') {
+                            piece290(xMidPosition, yMidPosition, 'x');
+                            vPiece = 290;
+                        }
                     }
-                break;
+                    break;
+                case 290:
+                    if((xMidPosition - 2) >= 0) {
+                        if(mtzCanvas[xMidPosition - 1][yMidPosition] != 'X' &&
+                           mtzCanvas[xMidPosition - 2][yMidPosition] != 'X' &&
+                           mtzCanvas[xMidPosition - 2][yMidPosition - 1] != 'X') {
+                            piece218(xMidPosition, yMidPosition, 'x');
+                            vPiece = 218;
+                        }
+                    }
+                    break;
         }
     }
 }
 void fallPiece() {
     if(isPieceOnTheGround(vPiece) == 0) {
-        cleanMtz();
         yMidPosition++;
-        switch(vPiece){
+        switch(vPiece) {
             case 1:
                 piece1(xMidPosition, yMidPosition, 'x');
                 break;
@@ -354,9 +408,12 @@ void fallPiece() {
             case 290:
                 piece290(xMidPosition, yMidPosition, 'x');
                 break;
+            case 218:
+                piece218(xMidPosition, yMidPosition, 'x');
+                break;
         }
     } else {
-        switch(vPiece){
+        switch(vPiece) {
             case 1:
                 piece1(xMidPosition, yMidPosition, 'X');
                 break;
@@ -369,31 +426,36 @@ void fallPiece() {
             case 290:
                 piece290(xMidPosition, yMidPosition, 'X');
                 break;
+            case 218:
+                piece218(xMidPosition, yMidPosition, 'X');
+                break;
         }
         pieceAlreadyInGame = 0;
         checkFullLines();
     }
 }
 
-void checkFullLines(){
+void checkFullLines() {
     int i;
     int j;
     int l;
-    for(i=HEIGHT; i!=0; i--){
+    for(i=HEIGHT; i!=0; i--) {
         if(mtzCanvas[0][i]=='X' && mtzCanvas[1][i]=='X' && mtzCanvas[2][i]=='X' && mtzCanvas[3][i]=='X' &&
            mtzCanvas[4][i]=='X' && mtzCanvas[5][i]=='X' && mtzCanvas[6][i]=='X' && mtzCanvas[7][i]=='X' &&
-           mtzCanvas[8][i]=='X' && mtzCanvas[9][i]=='X' && mtzCanvas[10][i]=='X' && mtzCanvas[11][i]=='X'){
+           mtzCanvas[8][i]=='X' && mtzCanvas[9][i]=='X' && mtzCanvas[10][i]=='X' && mtzCanvas[11][i]=='X' &&
+           mtzCanvas[12][i]=='X') {
 
             filledLinesCounter++;
             userScore += (100 * filledLinesCounter);
 
         } else {
-            while(filledLinesCounter > 0){
+            while(filledLinesCounter > 0) {
                 i++;
-                for(j=0; j<WIDTH; j++){
+                for(j=0; j<WIDTH; j++) {
                     mtzCanvas[j][i] = '.';
-                    for(l=i-1;l!=0;l--){
+                    for(l=i-1;l!=0;l--) {
                         mtzCanvas[j][l+1] = mtzCanvas[j][l];
+                        mtzCanvas[j][l] = '.';
                     }
                 }
                 filledLinesCounter--;
@@ -410,6 +472,7 @@ void startGame() {
     time_t plusDif = (time_t) difficult;
 
     do {
+        Sleep(16.66);
         drawCanvas();
         vErr = setPiece();
         if(kbhit()) {
@@ -419,7 +482,6 @@ void startGame() {
             t = time(NULL);
             fallPiece();
         }
-        printf("%i", userScore);
     } while(gameOver != 1 && vErr != 1);
 }
 
@@ -502,7 +564,7 @@ void choseTime() {
     }
 }
 
-int main(){
+int main() {
     char* vError = "";
     while(1) {
         char usrChoose;
