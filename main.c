@@ -80,7 +80,7 @@ void cleanMtz() {
     for(i = 0;i < HEIGHT; i++) {
         for(j = 0;j < WIDTH;j++) {
             if(mtzCanvas[j][i] == 'x') {
-                mtzCanvas[j][i] = '.';
+                mtzCanvas[j][i] = ' ';
             }
         }
     }
@@ -97,7 +97,7 @@ void drawCanvas() {
         printf("|");
         for(j = 0;j < WIDTH;j++) {
             if(mtzCanvas[j][i] == 0) {
-                mtzCanvas[j][i] = '.';
+                mtzCanvas[j][i] = ' ';
             }
             printf(" %c", mtzCanvas[j][i]);
         }
@@ -513,10 +513,10 @@ void checkFullLines() {
             while(filledLinesCounter > 0) {
                 i++;
                 for(j=0; j<WIDTH; j++) {
-                    mtzCanvas[j][i] = '.';
+                    mtzCanvas[j][i] = ' ';
                     for(l=i-1;l!=0;l--) {
                         mtzCanvas[j][l+1] = mtzCanvas[j][l];
-                        mtzCanvas[j][l] = '.';
+                        mtzCanvas[j][l] = ' ';
                     }
                 }
                 filledLinesCounter--;
@@ -527,21 +527,26 @@ void checkFullLines() {
 }
 
 void startGame() {
+    int reDraw = 1;
     int gameOver = 0;
     int vErr = 0;
     time_t t = time(NULL);
     time_t plusDif = (time_t) difficult;
 
     do {
-        Sleep(35);
-        drawCanvas();
+        if(reDraw > 0) {
+            drawCanvas();
+            reDraw--;
+        }
         vErr = setPiece();
         if(kbhit()) {
+            reDraw++;
             doPlayerCommand();
         }
         if((t + plusDif) <= time(NULL)) {
             t = time(NULL);
             fallPiece();
+            reDraw++;
         }
     } while(gameOver != 1 && vErr != 1);
 }
