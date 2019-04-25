@@ -17,7 +17,7 @@ char mtzCanvas[WIDTH][HEIGHT];
 
 int difficult = 0, timeLength = 0, pieceAlreadyInGame = 0,
     vPiece = 1, playerCommand, userScore = 0,filledLinesCounter = 0,
-    xMidPosition = 0, yMidPosition = 0;
+    xMidPosition = 0, yMidPosition = 0, gameOver = 0;
 
 const int MIDBLOCK = (WIDTH/2)-1;
 
@@ -123,19 +123,31 @@ int setPiece() {
             case 1:
                 xMidPosition = MIDBLOCK;
                 yMidPosition = 0;
-                piece1(MIDBLOCK, 0, 'x');
-                pieceAlreadyInGame = 1;
-                return 0;
+                if(mtzCanvas[xMidPosition][yMidPosition]!='X' &&
+                   mtzCanvas[xMidPosition + 1][yMidPosition]!='X' &&
+                   mtzCanvas[xMidPosition + 2][yMidPosition]!='X' &&
+                   mtzCanvas[xMidPosition + 3][yMidPosition]!='X') {
+                    piece1(MIDBLOCK, 0, 'x');
+                    pieceAlreadyInGame = 1;
+                } else {
+                    gameOver = 1;
+                }
+                break;
             case 2:
                 xMidPosition = MIDBLOCK;
                 yMidPosition = 0;
-                piece2(MIDBLOCK, 0, 'x');
-                pieceAlreadyInGame = 1;
-                return 0;
-            default:
-                return 1;
+                if(mtzCanvas[xMidPosition][yMidPosition]!='X' &&
+                   mtzCanvas[xMidPosition + 1][yMidPosition]!='X' &&
+                   mtzCanvas[xMidPosition + 2][yMidPosition]!='X' &&
+                   mtzCanvas[xMidPosition + 2][yMidPosition + 1]!='X'){
+                    piece2(MIDBLOCK, 0, 'x');
+                    pieceAlreadyInGame = 1;
+                } else {
+                    gameOver = 1;
+                }
 
         }
+        return 1;
     }
     return 0;
 }
@@ -449,6 +461,7 @@ void doPlayerCommand() {
         }
     }
 }
+
 void fallPiece() {
     if(isPieceOnTheGround(vPiece) == 0) {
         yMidPosition++;
@@ -526,10 +539,19 @@ void checkFullLines() {
     filledLinesCounter = 0;
 }
 
+void showGameOver() {
+    printf("\t\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
+    printf("\t\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
+    printf("\t\t  GGGG            GGGG       \n");
+    printf("\t\t  GGGG  GGGGG     GGGG  GGGGG\n");
+    printf("\t\t  GGGG  GGGGG     GGGG  GGGGG\n");
+    printf("\t\t  GGGG    GGG     GGGG    GGG\n");
+    printf("\t\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
+    printf("\t\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
+}
+
 void startGame() {
     int reDraw = 1;
-    int gameOver = 0;
-    int vErr = 0;
     time_t t = time(NULL);
     time_t plusDif = (time_t) difficult;
 
@@ -538,7 +560,7 @@ void startGame() {
             drawCanvas();
             reDraw--;
         }
-        vErr = setPiece();
+        reDraw += setPiece();
         if(kbhit()) {
             reDraw++;
             doPlayerCommand();
@@ -548,7 +570,16 @@ void startGame() {
             fallPiece();
             reDraw++;
         }
-    } while(gameOver != 1 && vErr != 1);
+    } while(gameOver != 1);
+
+    if(gameOver == 1){
+        system("CLS");
+        printf("\n\n\n\n\n");
+        showGameOver();
+        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        system("pause");
+    }
+
 }
 
 void chooseDificult() {
