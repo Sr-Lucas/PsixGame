@@ -4,12 +4,13 @@
 #include <unistd.h>
 #include <Windows.h>
 #include <time.h>
+#include <string.h>
 
-/* Change these constants behind if you want a different size of canvas */
+/* Change these constants below if you want a different size of canvas */
 #define WIDTH 13  /*the canvas WIDTH*/  /*recommended an odd number*/
 #define HEIGHT 16 /*the canvas HEIGHT*/
 
-/* Do never change these constants behind */
+/* Do never change these constants below */
 #define MAXWIDTH (WIDTH - 1) /*the canvas max WIDTH at right.  !!!Used for the piece not get out of the board!!! */
 #define MINWIDTH 0   /*the canvas max WIDTH at right.           !!!Used for the piece not get out of the board!!! */
 
@@ -17,12 +18,16 @@ char mtzCanvas[WIDTH][HEIGHT];
 
 int difficult = 0, timeLength = 0, pieceAlreadyInGame = 0,
     vPiece = 1, playerCommand, userScore = 0,filledLinesCounter = 0,
-    xMidPosition = 0, yMidPosition = 0, gameOver = 0;
+    xMidPosition = 0, yMidPosition = 0, gameOver = 0, gameTurn = 1,
+    playerOneScore = 0, playerTwoScore = 0;
 
 const int MIDBLOCK = (WIDTH/2)-1;
 
 char* vDifficult = "(nao escolhida)";
 char* vTimeLenght = "(nao escolhido)";
+
+char playerOneNick[20] = " ";
+char playerTwoNick[20] = " ";
 
 void piece1(int x, int y, char value) {
     cleanMtz();
@@ -86,34 +91,43 @@ void cleanMtz() {
     }
 }
 
-void drawCanvas() {
+cleanAllMtz() {
+    int i = 0;
+    int j = 0;
+    for(i = 0;i < HEIGHT; i++) {
+        for(j = 0;j < WIDTH;j++) {
+            mtzCanvas[j][i] = ' ';
+        }
+    }
+}
+
+void drawCanvas(char *nick, char *offset) {
     system("CLS");
     int i;
     int j;
-    printf("  ");
+
+    printf("\t   ###########################\n");
+    printf("\t   #       SCORE: %i\t     #\n", userScore);
+    printf("\t   #       JOGADOR %i: %s%s  #\n", gameTurn,nick,offset);
+    printf("\t   ###########################\n");
+
+    printf("\t    ");
     for(i=0; i<WIDTH ; i++) printf("_ ");
     printf("\n");
     for(i = 0;i < HEIGHT; i++) {
-        printf("|");
+        printf("\t   |");
         for(j = 0;j < WIDTH;j++) {
             if(mtzCanvas[j][i] == 0) {
                 mtzCanvas[j][i] = ' ';
             }
-            printf(" %c", mtzCanvas[j][i]);
+            if(j != 0) printf(" ");
+            printf("%c", mtzCanvas[j][i]);
         }
-        printf(" |");
+        printf("|");
         printf("\n");
     }
-    printf("  ");
+    printf("\t    ");
     for(i=0; i<WIDTH ; i++) printf("- ");
-
-    /*SCORE*/
-    printf("\n");
-    for(i=0; i<HEIGHT; i++) printf("# ");
-    printf("\n# \t JOGADOR: %s       #\n", "Lucas");
-    printf("# \t SCORE  : %i \t      # \n", userScore);
-    for(i=0; i<HEIGHT; i++) printf("# ");
-    /*SCORE*/
 }
 
 int setPiece() {
@@ -540,24 +554,94 @@ void checkFullLines() {
 }
 
 void showGameOver() {
-    printf("\t\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
-    printf("\t\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
-    printf("\t\t  GGGG            GGGG       \n");
-    printf("\t\t  GGGG  GGGGG     GGGG  GGGGG\n");
-    printf("\t\t  GGGG  GGGGG     GGGG  GGGGG\n");
-    printf("\t\t  GGGG    GGG     GGGG    GGG\n");
-    printf("\t\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
-    printf("\t\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
+    printf("\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
+    printf("\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
+    printf("\t  GGGG            GGGG       \n");
+    printf("\t  GGGG  GGGGG     GGGG  GGGGG\n");
+    printf("\t  GGGG  GGGGG     GGGG  GGGGG\n");
+    printf("\t  GGGG    GGG     GGGG    GGG\n");
+    printf("\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
+    printf("\t  GGGGGGGGGGG     GGGGGGGGGGG\n");
+}
+
+void choosePlayerNames() {
+    int segundos = 10, i;
+    do {
+        system("CLS");
+        if(strlen(playerOneNick) > 5 || strlen(playerTwoNick) > 5){
+            printf("ERRO: Um dos nicks possui mais de 5 carateres!\n");
+        }
+
+        printf("\n\n\n\n\n");
+        printf("Escolha de nomes (5 caracteres): ");
+        printf("\n\n");
+
+        printf("\t -- Jogador 1 --> ");
+        fflush(stdin);
+        gets(playerOneNick);
+
+        printf("\n\n");
+
+        printf("\t -- Jogador 2 --> ");
+        fflush(stdin);
+        gets(playerTwoNick);
+
+        printf("\n\n\n\n\n\n");
+    } while(strlen(playerOneNick) > 5 || strlen(playerTwoNick) > 5);
+    system("pause");
+    system("CLS");
+
+    for(i=10; i!=0; i--) {
+        printf("\n\n\n\n\n");
+        printf("\tPrepare - se PLAYER 1 !!!  :D");
+        printf("\n\n\n\n\n");
+        printf("\tIniciando jogo em %i segundos", i);
+        Sleep(1*1000);
+        system("cls");
+    }
 }
 
 void startGame() {
+    if(gameTurn != 2){
+        choosePlayerNames();
+    } else {
+        int i;
+        for(i=10; i!=0; i--) {
+            printf("\n\n\n\n\n");
+            printf("\tPrepare - se PLAYER 2 !!!  :D");
+            printf("\n\n\n\n\n");
+            printf("\tIniciando jogo em %i segundos", i);
+            Sleep(1*1000);
+            system("cls");
+        }
+    }
+    char *playerNick = gameTurn == 1 ? playerOneNick : playerTwoNick;
+    char *offset = "";
+    switch(strlen(playerNick)) {
+        case 4:
+            offset = " ";
+            break;
+        case 3:
+            offset = "  ";
+            break;
+        case 2:
+            offset = "   ";
+            break;
+        case 1:
+            offset = "    ";
+        break;
+        case 0:
+            offset = "     ";
+
+    }
+
     int reDraw = 1;
     time_t t = time(NULL);
     time_t plusDif = (time_t) difficult;
 
     do {
         if(reDraw > 0) {
-            drawCanvas();
+            drawCanvas(playerNick, offset);
             reDraw--;
         }
         reDraw += setPiece();
@@ -572,12 +656,42 @@ void startGame() {
         }
     } while(gameOver != 1);
 
-    if(gameOver == 1){
-        system("CLS");
-        printf("\n\n\n\n\n");
-        showGameOver();
-        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    system("CLS");
+    printf("\n\n\n\n\n");
+    showGameOver();
+    printf("\n\n\n\n\n\n\n\n\n\n");
+
+    if(gameTurn == 1) {
+        gameOver = 0;
+        gameTurn = 2;
+        playerOneScore = userScore;
+        userScore = 0;
+
         system("pause");
+        system("CLS");
+
+        cleanAllMtz();
+        startGame();
+    } else {
+        gameOver = 0;
+        gameTurn = 1;
+        playerTwoScore = userScore;
+        userScore = 0;
+
+        if(playerOneScore > playerTwoScore) {
+            printf("PLAYER 1 PARABENS!!!  :D");
+            printf("\n\n\n\n");
+        } else if (playerTwoScore > playerOneScore) {
+            printf("PLAYER 2 PARABENS!!!  :D");
+            printf("\n\n\n\n");
+        } else {
+            printf("EMPATE!!! lol");
+            printf("\n\n\n\n");
+        }
+
+        cleanAllMtz();
+        system("pause");
+        system("CLS");
     }
 
 }
@@ -594,10 +708,10 @@ void chooseDificult() {
         }
 
         printf("\n\n\n\n\n\n");
-        printf("\t\t 1 - Easy \n\n");
-        printf("\t\t 2 - Medium \n\n");
-        printf("\t\t 3 - Hard \n\n");
-        printf("\t\t ESC - <- Voltar \n\n");
+        printf("\t 1 - Easy \n\n");
+        printf("\t 2 - Medium \n\n");
+        printf("\t 3 - Hard \n\n");
+        printf("\t ESC - <- Voltar \n\n");
 
         usrChoose = getch();
         switch(usrChoose) {
@@ -633,10 +747,10 @@ void choseTime() {
         }
 
         printf("\n\n\n\n\n\n");
-        printf("\t\t 1 - 1 Minuto \n\n");
-        printf("\t\t 2 - 2 Minutos \n\n");
-        printf("\t\t 3 - 3 Minutos \n\n");
-        printf("\t\t ESC - <- Voltar \n\n");
+        printf("\t 1 - 1 Minuto \n\n");
+        printf("\t 2 - 2 Minutos \n\n");
+        printf("\t 3 - 3 Minutos \n\n");
+        printf("\t ESC - <- Voltar \n\n");
 
         usrChoose = getch();
         switch(usrChoose) {
@@ -662,6 +776,7 @@ void choseTime() {
 }
 
 int main() {
+    system("mode 50,30");
     char* vError = "";
     while(1) {
         char usrChoose;
@@ -673,12 +788,12 @@ int main() {
         }
 
         printf("\n\n\n\n\n\n");
-        printf("\t\t P - Inicia o game \n\n");
-        printf("\t\t D - Escolhe a dificuldade \n\n");
-        printf("\t\t T - Escolhe o tempo de jogo \n\n");
-        printf("\t\t ESC - Sair \n\n\n\n\n\n");
+        printf("\t P - Inicia o game \n\n");
+        printf("\t D - Escolhe a dificuldade \n\n");
+        printf("\t T - Escolhe o tempo de jogo \n\n");
+        printf("\t ESC - Sair \n\n\n\n\n\n");
 
-        printf("\t DIFICULDADE -> %s\t",vDifficult);
+        printf("\t DIFICULDADE -> %s\n",vDifficult);
         printf("\t TEMPO DE JOGO -> %s\n",vTimeLenght);
 
         usrChoose = getch();

@@ -23,11 +23,12 @@
 	<Windows.h>
 	<time.h>
 
-1556215549 source:c:\c_projectcs\psixgame\main.c
+1556253725 source:c:\c_projectcs\psixgame\main.c
 	<stdio.h>
 	<stdlib.h>
 	<conio.h>
 	<unistd.h>
 	<Windows.h>
 	<time.h>
+	<string.h>
 
