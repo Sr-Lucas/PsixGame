@@ -134,6 +134,8 @@ void drawCanvas(char *nick, char *offset) {
     printMatriz();
     printf("\t    ");
     for(i=0; i<WIDTH ; i++) printf("- ");
+
+    printf("\n\t\t   #TIMER: %d\t\n", timeLength);
 }
 
 int setPiece() {
@@ -641,26 +643,41 @@ void startGame() {
 
     }
 
-    int reDraw = 1;
-    time_t t = time(NULL); //hora do sistema atual em segundos
-    time_t plusDif = (time_t) difficult;
+    int reDraw = 1; //controls the reDraws of the board
+    int timeLengthSave = timeLength; //save the time length for the next turn
+    time_t timeController_FallPiece = time(NULL); //used for control the speed's falling of the piece
+    time_t timeController_Game = time(NULL); //used for control the time of the game
+    time_t plusDif = (time_t) difficult; //used for control the speed's falling of the piece
+
+    int isTimeInfinity = timeLengthSave == 1 ? 1 : 0;
 
     do {
+        /*controls the time of the game*/
+        if(isTimeInfinity != 1) {
+            if(timeController_Game != time(NULL)) {
+                timeController_Game = time(NULL);
+                timeLength--;
+                reDraw++;
+            }
+        }
+
+        /*make it draw only if necessary*/
         if(reDraw > 0) {
-            drawCanvas(playerNick, offset); //1
+            drawCanvas(playerNick, offset); //1 - draw the canvas on screen
             reDraw--;
         }
-        reDraw += setPiece(); //2
+        reDraw += setPiece(); //2 - put a new piece in the game
         if(kbhit()) {
             reDraw++;
-            doPlayerCommand(); //3
+            doPlayerCommand(); //3 - get and execute the player command
         }
-        if((t + plusDif) <= time(NULL)) {
-            t = time(NULL);
-            fallPiece(); //4
+        /*piece speed's falling*/
+        if((timeController_FallPiece + plusDif) <= time(NULL)) {
+            timeController_FallPiece = time(NULL);
+            fallPiece(); //4 - make the piece fall
             reDraw++;
         }
-    } while(gameOver != 1);
+    } while(gameOver != 1 && timeLength > 0);
 
     system("CLS");
     printf("\n\n\n\n\n");
@@ -670,17 +687,25 @@ void startGame() {
     if(gameTurn == 1) {
         gameOver = 0;
         gameTurn = 2;
+        timeLength = timeLengthSave;
+
         playerOneScore = userScore;
         userScore = 0;
 
+        Sleep(5*1000);
+        fflush(stdin);
         system("pause");
         system("CLS");
 
         cleanAllMtz();
+
+        pieceAlreadyInGame = 0;
         startGame();
     } else {
         gameOver = 0;
         gameTurn = 1;
+        timeLength = timeLengthSave;
+
         playerTwoScore = userScore;
         userScore = 0;
 
@@ -696,8 +721,12 @@ void startGame() {
         }
 
         cleanAllMtz();
+        Sleep(5*1000);
+        fflush(stdin);
         system("pause");
         system("CLS");
+
+        pieceAlreadyInGame = 0;
     }
 
 }
@@ -741,9 +770,10 @@ void chooseDificult() {
         if(usrChoose == 27 || usrChoose == 49 || usrChoose == 50 || usrChoose == 51) break;
     }
 }
-void choseTime() {
+void chooseTime() {
+    int escape = 0;
     char* vError = "";
-    while(1) {
+    do {
         int usrChoose = 0;
 
         if(vError != "") {
@@ -753,32 +783,52 @@ void choseTime() {
         }
 
         printf("\n\n\n\n\n\n");
-        printf("\t 1 - 1 Minuto \n\n");
-        printf("\t 2 - 2 Minutos \n\n");
-        printf("\t 3 - 3 Minutos \n\n");
+        printf("\t 1 - 1 Min     \t 4 - 10 Min    \n\n");
+        printf("\t 2 - 2 Min     \t 5 - 15 Min    \n\n");
+        printf("\t 3 - 3 Min     \t 6 -  INFINITO \n\n");
+
+        printf("\n\n");
         printf("\t ESC - <- Voltar \n\n");
 
         usrChoose = getch();
         switch(usrChoose) {
             case 49:
-                timeLength = 1;
+                timeLength = 1 * 60;
                 vTimeLenght = "1 Minuto";
+                escape = 1;
                 break;
             case 50:
-                timeLength = 2;
+                timeLength = 2 * 60;
                 vTimeLenght = "2 Minutos";
+                escape = 1;
                 break;
             case 51:
-                timeLength = 3;
+                timeLength = 3 * 60;
                 vTimeLenght = "3 Minutos";
+                escape = 1;
+                break;
+            case 52:
+                timeLength = 10 * 60;
+                vTimeLenght = "10 Minutos";
+                escape = 1;
+                break;
+            case 53:
+                timeLength = 15 * 60;
+                vTimeLenght = "15 Minutos";
+                escape = 1;
+                break;
+            case 54:
+                timeLength = 1;
+                vTimeLenght = "INFINITO";
+                escape = 1;
                 break;
             default:
                 vError = "\t\t ERRO: Escolha somente 1, 2, 3 ou ESC! \n\n\n";
                 break;
         }
         system("CLS");
-        if(usrChoose == 27 || usrChoose == 49 || usrChoose == 50 || usrChoose == 51) break;
-    }
+
+    } while(escape != 1);
 }
 
 int main() {
@@ -806,7 +856,7 @@ int main() {
         switch(usrChoose) {
             case 112: //112 == p
                 system("CLS");
-                if(1) { //difficult != 0 && timeLength != 0
+                if(difficult != 0 && timeLength != 0) {
                     startGame();
                 } else {
                     vError = "\t\t ERRO: Escolha uma dificuldade e tempo de jogo!";
@@ -818,7 +868,7 @@ int main() {
                 break;
             case 116: //116 == t
                 system("CLS");
-                choseTime();
+                chooseTime();
                 break;
             default:
                 vError = "\t\t ERRO: Escolha somente P, D, T ou ESC! \n\n\n";
