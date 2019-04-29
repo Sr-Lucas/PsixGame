@@ -101,19 +101,10 @@ cleanAllMtz() {
     }
 }
 
-void drawCanvas(char *nick, char *offset) {
-    system("CLS");
+void printMatriz() {
     int i;
     int j;
 
-    printf("\t   ###########################\n");
-    printf("\t   #       SCORE: %i\t     #\n", userScore);
-    printf("\t   #       JOGADOR %i: %s%s  #\n", gameTurn,nick,offset);
-    printf("\t   ###########################\n");
-
-    printf("\t    ");
-    for(i=0; i<WIDTH ; i++) printf("_ ");
-    printf("\n");
     for(i = 0;i < HEIGHT; i++) {
         printf("\t   |");
         for(j = 0;j < WIDTH;j++) {
@@ -126,6 +117,21 @@ void drawCanvas(char *nick, char *offset) {
         printf("|");
         printf("\n");
     }
+}
+
+void drawCanvas(char *nick, char *offset) {
+    system("CLS");
+
+    printf("\t   ###########################\n");
+    printf("\t   #       SCORE: %i\t     #\n", userScore);
+    printf("\t   #       JOGADOR %i: %s%s  #\n", gameTurn,nick,offset);
+    printf("\t   ###########################\n");
+
+    printf("\t    ");
+    int i;
+    for(i=0; i<WIDTH ; i++) printf("_ ");
+    printf("\n");
+    printMatriz();
     printf("\t    ");
     for(i=0; i<WIDTH ; i++) printf("- ");
 }
@@ -636,22 +642,22 @@ void startGame() {
     }
 
     int reDraw = 1;
-    time_t t = time(NULL);
+    time_t t = time(NULL); //hora do sistema atual em segundos
     time_t plusDif = (time_t) difficult;
 
     do {
         if(reDraw > 0) {
-            drawCanvas(playerNick, offset);
+            drawCanvas(playerNick, offset); //1
             reDraw--;
         }
-        reDraw += setPiece();
+        reDraw += setPiece(); //2
         if(kbhit()) {
             reDraw++;
-            doPlayerCommand();
+            doPlayerCommand(); //3
         }
         if((t + plusDif) <= time(NULL)) {
             t = time(NULL);
-            fallPiece();
+            fallPiece(); //4
             reDraw++;
         }
     } while(gameOver != 1);
