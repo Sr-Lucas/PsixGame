@@ -547,9 +547,9 @@ void checkFullLines() {
         } else {
             while(filledLinesCounter > 0) {
                 i++;
-                for(j=0; j<WIDTH; j++) {
+                for(j=0; j<WIDTH + 1; j++) {
                     mtzCanvas[j][i] = ' ';
-                    for(l=i-1;l!=0;l--) {
+                    for(l=i-1;l!=-1;l--) {
                         mtzCanvas[j][l+1] = mtzCanvas[j][l];
                         mtzCanvas[j][l] = ' ';
                     }
@@ -669,6 +669,7 @@ void startGame() {
         reDraw += setPiece(); //2 - put a new piece in the game
         if(kbhit()) {
             reDraw++;
+            fflush(stdin);
             doPlayerCommand(); //3 - get and execute the player command
         }
         /*piece speed's falling*/
