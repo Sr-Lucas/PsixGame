@@ -14,6 +14,16 @@
 #define MAXWIDTH (WIDTH - 1) /*the canvas max WIDTH at right.  !!!Used for the piece not get out of the board!!! */
 #define MINWIDTH 0   /*the canvas max WIDTH at right.           !!!Used for the piece not get out of the board!!! */
 
+#define COLOR_BLACK 0
+#define COLOR_BLUE 1
+#define COLOR_GREEN 2
+#define COLOR_LIGHT_BLUE 3
+#define COLOR_RED 4
+#define COLOR_PINK 5
+#define COLOR_YELLOW 6
+#define COLOR_BLANK 7
+#define COLOR_GRAY 8
+
 char mtzCanvas[WIDTH][HEIGHT];
 
 int difficult = 0, timeLength = 0, pieceAlreadyInGame = 0,
@@ -167,6 +177,7 @@ cleanAllMtz() {
 void printMatriz() {
     int i;
     int j;
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 
     for(i = 0;i < HEIGHT; i++) {
         printf("\t   |");
@@ -175,7 +186,13 @@ void printMatriz() {
                 mtzCanvas[j][i] = ' ';
             }
             if(j != 0) printf(" ");
-            printf("%c", mtzCanvas[j][i]);
+            if(mtzCanvas[j][i] != 'x' && mtzCanvas[j][i] != 'X') {
+                printf("%c", mtzCanvas[j][i]);
+            } else {
+                SetConsoleTextAttribute(h, COLOR_RED);
+                printf("%c", mtzCanvas[j][i]);
+                SetConsoleTextAttribute(h, COLOR_BLANK);
+            }
         }
         printf("|");
         printf("\n");
@@ -1211,14 +1228,15 @@ void startGame() {
 }
 
 void chooseDificult() {
-    char *vError = "";
-    while(1) {
+    int escape = 0;
+    char vError[80] = "";
+    do {
         int usrChoose = 0;
 
-        if(vError != "") {
+        if(strcmp(vError, "")) {
             printf("\n\n");
             printf(vError);
-            vError = "";
+            strcpy(vError, "");
         }
 
         printf("\n\n\n\n\n\n");
@@ -1232,33 +1250,38 @@ void chooseDificult() {
             case 49:
                 difficult = 3;
                 vDifficult = "EASY";
+                escape = 1;
                 break;
             case 50:
                 difficult = 2;
                 vDifficult = "MEDIUM";
+                escape = 1;
                 break;
             case 51:
                 difficult = 1;
                 vDifficult = "HARD";
+                escape = 1;
+                break;
+            case 27:
+                escape = 1;
                 break;
             default:
-                vError = "\t\t ERRO: Escolha somente 1, 2, 3 ou ESC! \n\n\n";
+                strcpy(vError, "\t ERRO: Escolha somente 1, 2, 3 ou ESC! \n\n\n");
                 break;
         }
         system("CLS");
-        if(usrChoose == 27 || usrChoose == 49 || usrChoose == 50 || usrChoose == 51) break;
-    }
+    } while(escape != 1);
 }
 void chooseTime() {
     int escape = 0;
-    char* vError = "";
+    char vError[80] = "";
     do {
         int usrChoose = 0;
 
         if(vError != "") {
             printf("\n\n");
             printf(vError);
-            vError = "";
+            strcpy(vError, "");
         }
 
         printf("\n\n\n\n\n\n");
@@ -1301,8 +1324,11 @@ void chooseTime() {
                 vTimeLenght = "INFINITO";
                 escape = 1;
                 break;
+            case 27:
+                escape = 1;
+                break;
             default:
-                vError = "\t\t ERRO: Escolha somente 1, 2, 3 ou ESC! \n\n\n";
+                strcpy(vError, "\t ERRO: Escolha somente 1, 2, 3 ou ESC! \n\n\n");
                 break;
         }
         system("CLS");
@@ -1312,14 +1338,14 @@ void chooseTime() {
 
 int main() {
     system("mode 50,30");
-    char* vError = "";
+    char vError[80] = "";
     while(1) {
         char usrChoose;
 
         if(vError != "") {
             printf("\n\n");
             printf(vError);
-            vError = "";
+            strcpy(vError, "");
         }
 
         printf("\n\n\n\n\n\n");
@@ -1338,7 +1364,7 @@ int main() {
                 if(difficult != 0 && timeLength != 0) {
                     startGame();
                 } else {
-                    vError = "\t\t ERRO: Escolha uma dificuldade e tempo de jogo!";
+                    strcpy(vError, "   ERRO: Escolha uma dificuldade e tempo de jogo!");
                 }
                 break;
             case 100: //100 == d
@@ -1350,7 +1376,7 @@ int main() {
                 chooseTime();
                 break;
             default:
-                vError = "\t\t ERRO: Escolha somente P, D, T ou ESC! \n\n\n";
+                strcpy(vError, "\t ERRO: Escolha somente P, D, T ou ESC! \n\n\n");
                 break;
         }
         system("CLS");
