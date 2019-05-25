@@ -25,6 +25,7 @@
 #define COLOR_GRAY 8
 
 char mtzCanvas[WIDTH][HEIGHT];
+char mtzColors[WIDTH][HEIGHT];
 
 int difficult = 0, timeLength = 0, pieceAlreadyInGame = 0,
     vPiece = 1, playerCommand, userScore = 0,filledLinesCounter = 0,
@@ -33,13 +34,13 @@ int difficult = 0, timeLength = 0, pieceAlreadyInGame = 0,
 
 const int MIDBLOCK = (WIDTH/2)-1;
 
-char* vDifficult = "(nao escolhida)";
-char* vTimeLenght = "(nao escolhido)";
+char vDifficult[20] = "(nao escolhida)";
+char vTimeLenght[20] = "(nao escolhido)";
 
 char playerOneNick[20] = " ";
 char playerTwoNick[20] = " ";
 
-void piece1(int x, int y, char value) {
+void piece1(int x, int y, char value, char color) {
     cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x + 1][y] = value;
@@ -47,7 +48,7 @@ void piece1(int x, int y, char value) {
     mtzCanvas[x + 3][y] = value;
 }
 
-void piece190(int x, int y, char value) {
+void piece190(int x, int y, char value, char color) {
     cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x][y + 1] = value;
@@ -55,7 +56,7 @@ void piece190(int x, int y, char value) {
     mtzCanvas[x][y + 3] = value;
 }
 
-void piece2(int x, int y, char value) {
+void piece2(int x, int y, char value, char color) {
     cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x + 1][y] = value;
@@ -63,7 +64,7 @@ void piece2(int x, int y, char value) {
     mtzCanvas[x + 2][y + 1] = value;
 }
 
-void piece290(int x, int y, char value) {
+void piece290(int x, int y, char value, char color) {
     cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x][y - 1] = value;
@@ -71,7 +72,7 @@ void piece290(int x, int y, char value) {
     mtzCanvas[x + 1][y -2] = value;
 }
 
-void piece218(int x, int y, char value) {
+void piece218(int x, int y, char value, char color) {
     cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x - 1][y] = value;
@@ -80,7 +81,7 @@ void piece218(int x, int y, char value) {
 
 }
 
-void piece227(int x, int y, char value) {
+void piece227(int x, int y, char value, char color) {
     cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x][y + 1] = value;
@@ -89,8 +90,8 @@ void piece227(int x, int y, char value) {
 
 }
 
-void piece3(int x, int y, char value) { //00
-    cleanMtz();                         //00
+void piece3(int x, int y, char value, char color) {
+    cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x + 1][y] = value;
     mtzCanvas[x ][y + 1] = value;
@@ -98,8 +99,8 @@ void piece3(int x, int y, char value) { //00
 
 }
 
-void piece4(int x, int y, char value) { // 00
-    cleanMtz();                         //00
+void piece4(int x, int y, char value, char color) {
+    cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x + 1][y] = value;
     mtzCanvas[x ][y + 1] = value;
@@ -107,17 +108,17 @@ void piece4(int x, int y, char value) { // 00
 
 }
 
-void piece490(int x, int y, char value) { // 0
-    cleanMtz();                           // 00
-    mtzCanvas[x][y] = value;              //  0
+void piece490(int x, int y, char value, char color) {
+    cleanMtz();
+    mtzCanvas[x][y] = value;
     mtzCanvas[x][y + 1] = value;
     mtzCanvas[x + 1][y + 1] = value;
     mtzCanvas[x + 1][y + 2] = value;
 
 }
 
-void piece5(int x, int y, char value) { // 0
-    cleanMtz();                         //000
+void piece5(int x, int y, char value, char color) {
+    cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x][y + 1] = value;
     mtzCanvas[x - 1][y + 1] = value;
@@ -125,17 +126,17 @@ void piece5(int x, int y, char value) { // 0
 
 }
 
-void piece527(int x, int y, char value) { // 0
-    cleanMtz();                           //00
-    mtzCanvas[x][y] = value;              // 0
+void piece527(int x, int y, char value, char color) {
+    cleanMtz();
+    mtzCanvas[x][y] = value;
     mtzCanvas[x][y + 1] = value;
     mtzCanvas[x - 1][y + 1] = value;
     mtzCanvas[x][y + 2] = value;
 
 }
 
-void piece518(int x, int y, char value) { //000
-    cleanMtz();                           // 0
+void piece518(int x, int y, char value, char color) {
+    cleanMtz();
     mtzCanvas[x][y] = value;
     mtzCanvas[x - 1][y] = value;
     mtzCanvas[x + 1][y] = value;
@@ -143,9 +144,9 @@ void piece518(int x, int y, char value) { //000
 
 }
 
-void piece590(int x, int y, char value) { //0
-    cleanMtz();                           //00
-    mtzCanvas[x][y] = value;              //0
+void piece590(int x, int y, char value, char color) {
+    cleanMtz();
+    mtzCanvas[x][y] = value;
     mtzCanvas[x][y + 1] = value;
     mtzCanvas[x + 1][y + 1] = value;
     mtzCanvas[x][y + 2] = value;
@@ -177,6 +178,7 @@ cleanAllMtz() {
 void printMatriz() {
     int i;
     int j;
+
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 
     for(i = 0;i < HEIGHT; i++) {
@@ -186,12 +188,12 @@ void printMatriz() {
                 mtzCanvas[j][i] = ' ';
             }
             if(j != 0) printf(" ");
-            if(mtzCanvas[j][i] != 'x' && mtzCanvas[j][i] != 'X') {
-                printf("%c", mtzCanvas[j][i]);
-            } else {
-                SetConsoleTextAttribute(h, COLOR_RED);
+            if(mtzCanvas[j][i] == 'x' || mtzCanvas[j][i] == 'X'){
+                SetConsoleTextAttribute(h, COLOR_BLUE);
                 printf("%c", mtzCanvas[j][i]);
                 SetConsoleTextAttribute(h, COLOR_BLANK);
+            } else {
+                printf("%c", mtzCanvas[j][i]);
             }
         }
         printf("|");
@@ -1249,17 +1251,17 @@ void chooseDificult() {
         switch(usrChoose) {
             case 49:
                 difficult = 3;
-                vDifficult = "EASY";
+                strcpy(vDifficult, "EASY");
                 escape = 1;
                 break;
             case 50:
                 difficult = 2;
-                vDifficult = "MEDIUM";
+                strcpy(vDifficult, "MEDIUM");
                 escape = 1;
                 break;
             case 51:
                 difficult = 1;
-                vDifficult = "HARD";
+                strcpy(vDifficult, "HARD");
                 escape = 1;
                 break;
             case 27:
@@ -1296,32 +1298,32 @@ void chooseTime() {
         switch(usrChoose) {
             case 49:
                 timeLength = 1 * 60;
-                vTimeLenght = "1 Minuto";
+                strcpy(vTimeLenght ,"1 Minuto");
                 escape = 1;
                 break;
             case 50:
                 timeLength = 2 * 60;
-                vTimeLenght = "2 Minutos";
+                strcpy(vTimeLenght, "2 Minutos");
                 escape = 1;
                 break;
             case 51:
                 timeLength = 3 * 60;
-                vTimeLenght = "3 Minutos";
+                strcpy(vTimeLenght, "3 Minutos");
                 escape = 1;
                 break;
             case 52:
                 timeLength = 10 * 60;
-                vTimeLenght = "10 Minutos";
+                strcpy(vTimeLenght, "10 Minutos");
                 escape = 1;
                 break;
             case 53:
                 timeLength = 15 * 60;
-                vTimeLenght = "15 Minutos";
+                strcpy(vTimeLenght, "15 Minutos");
                 escape = 1;
                 break;
             case 54:
                 timeLength = 1;
-                vTimeLenght = "INFINITO";
+                strcpy(vTimeLenght, "INFINITO");
                 escape = 1;
                 break;
             case 27:
@@ -1347,6 +1349,8 @@ int main() {
             printf(vError);
             strcpy(vError, "");
         }
+
+        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 
         printf("\n\n\n\n\n\n");
         printf("\t P - Inicia o game \n\n");
