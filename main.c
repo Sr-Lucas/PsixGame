@@ -55,9 +55,13 @@ void piece1(int x, int y, char value, char color) {
 void piece190(int x, int y, char value, char color) {
     cleanMtz();
     mtzCanvas[x][y] = value;
+    mtzColors[x][y] = color;
     mtzCanvas[x][y + 1] = value;
+    mtzColors[x][y + 1] = color;
     mtzCanvas[x][y + 2] = value;
+    mtzColors[x][y + 2] = color;
     mtzCanvas[x][y + 3] = value;
+    mtzColors[x][y + 3] = color;
 }
 
 void piece2(int x, int y, char value, char color) {
