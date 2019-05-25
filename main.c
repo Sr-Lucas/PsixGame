@@ -43,9 +43,13 @@ char playerTwoNick[20] = " ";
 void piece1(int x, int y, char value, char color) {
     cleanMtz();
     mtzCanvas[x][y] = value;
+    mtzColors [x][y] = color;
     mtzCanvas[x + 1][y] = value;
+    mtzColors[x + 1][y] = color;
     mtzCanvas[x + 2][y] = value;
+    mtzColors[x + 2][y] = color;
     mtzCanvas[x + 3][y] = value;
+    mtzColors[x + 3][y] = color;
 }
 
 void piece190(int x, int y, char value, char color) {
@@ -848,7 +852,7 @@ void doUpMovement() {
         case 227:
             if((xMidPosition + 2) <= MAXWIDTH) {
                 if(mtzCanvas[xMidPosition + 1][yMidPosition] != 'X' &&
-                   mtzCanvas[xMidPosition + 2][yMidPosition] != 'X' &&
+                   mtzCanvas[xMidPosition + 2][yMidPosition] != 'X' &&git@github.com:ThiagoMB60/PsixGame.git
                    mtzCanvas[xMidPosition + 2][yMidPosition + 1] != 'X') {
                     piece2(xMidPosition, yMidPosition, 'x');
                     vPiece = 2;
